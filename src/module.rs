@@ -84,7 +84,7 @@ impl Module {
         unsafe {
             let mut out = mem::MaybeUninit::uninit();
             let mut err = mem::MaybeUninit::uninit();
-            let buf = try!(MemoryBuffer::new_from_file(path));
+            let buf = MemoryBuffer::new_from_file(path)?;
             if reader::LLVMParseBitcodeInContext(context.into(), buf.as_ptr(), out.as_mut_ptr(), err.as_mut_ptr()) == 1 {
                 Err(CBox::new(err.assume_init()))
             } else {
@@ -180,7 +180,7 @@ impl Module {
         let path = path.to_str().unwrap();
         let mod_path = dir.join("module.bc");
         let mod_path = mod_path.to_str().unwrap();
-        try!(self.write_bitcode(mod_path));
+        self.write_bitcode(mod_path)?;
         Command::new("llc")
             .arg(&format!("-O={}", opt_level))
             .arg("-filetype=obj")
